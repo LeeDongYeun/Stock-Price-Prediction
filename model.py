@@ -162,8 +162,8 @@ test_set_size = x_test.shape[0] # == 총 테스트 데이터 개수
 
 tf.reset_default_graph()
 
-X = tf.placeholder(tf.float32, [None, n_steps, n_inputs])
-y = tf.placeholder(tf.float32, [None, n_outputs])
+X = tf.placeholder(tf.float32, [None, n_steps, n_inputs], name="X")
+y = tf.placeholder(tf.float32, [None, n_outputs], name="Y")
 
 # use Basic RNN Cell
 layers = [tf.contrib.rnn.BasicRNNCell(num_units=n_neurons, activation=tf.nn.relu)
@@ -189,14 +189,14 @@ stacked_rnn_outputs = tf.reshape(rnn_outputs, [-1, n_neurons])
 print(stacked_rnn_outputs)
 stacked_outputs = tf.layers.dense(stacked_rnn_outputs, n_outputs)
 print(stacked_outputs)
-outputs = tf.reshape(stacked_outputs, [-1, n_steps, n_outputs])
+outputs = tf.reshape(stacked_outputs, [-1, n_steps, n_outputs], name= "outputs")
 print(outputs)
 outputs = outputs[:, n_steps - 1, :]  # keep only last output of sequence
 print(outputs)
 
-loss = tf.reduce_mean(tf.square(outputs - y))  # loss function = mean squared error
-optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
-training_op = optimizer.minimize(loss)
+loss = tf.reduce_mean(tf.square(outputs - y), name="loss")  # loss function = mean squared error
+optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate, name="optimizer")
+training_op = optimizer.minimize(loss,  name="training_op")
 
 # run graph
 with tf.Session() as sess:
